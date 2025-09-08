@@ -1,0 +1,222 @@
+<!-- Sidebar Component -->
+{% load static %}
+
+<div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 border-r border-gray-200">
+    <!-- Logo -->
+    <div class="flex h-16 shrink-0 items-center">
+        <img class="h-8 w-auto" src="{% static 'images/logo.svg' %}" alt="OneLastAI">
+        <span class="ml-2 text-xl font-bold gradient-bg-primary bg-clip-text text-transparent">OneLastAI</span>
+    </div>
+    
+    <nav class="flex flex-1 flex-col">
+        <ul role="list" class="flex flex-1 flex-col gap-y-7">
+            <!-- Main Navigation -->
+            <li>
+                <ul role="list" class="-mx-2 space-y-1">
+                    <!-- Dashboard -->
+                    <li>
+                        <a href="{% url 'dashboard:home' %}" 
+                           class="{% if request.resolver_match.app_name == 'dashboard' and request.resolver_match.url_name == 'home' %}bg-gray-50 text-blue-600{% else %}text-gray-700 hover:text-blue-600 hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-home h-6 w-6 shrink-0"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    
+                    <!-- Chat -->
+                    <li>
+                        <a href="{% url 'agents:chat' %}" 
+                           class="{% if request.resolver_match.app_name == 'agents' and 'chat' in request.resolver_match.url_name %}bg-gray-50 text-blue-600{% else %}text-gray-700 hover:text-blue-600 hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-comments h-6 w-6 shrink-0"></i>
+                            Chat
+                            {% if user.unread_messages_count %}
+                            <span class="ml-auto w-5 h-5 text-xs bg-red-500 text-white rounded-full flex items-center justify-center">
+                                {{ user.unread_messages_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    
+                    <!-- AI Agents -->
+                    <li>
+                        <a href="{% url 'agents:list' %}" 
+                           class="{% if request.resolver_match.app_name == 'agents' and 'list' in request.resolver_match.url_name %}bg-gray-50 text-blue-600{% else %}text-gray-700 hover:text-blue-600 hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-robot h-6 w-6 shrink-0"></i>
+                            AI Agents
+                        </a>
+                    </li>
+                    
+                    <!-- API Keys -->
+                    <li>
+                        <a href="{% url 'accounts:api_keys' %}" 
+                           class="{% if 'api_keys' in request.resolver_match.url_name %}bg-gray-50 text-blue-600{% else %}text-gray-700 hover:text-blue-600 hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-key h-6 w-6 shrink-0"></i>
+                            API Keys
+                        </a>
+                    </li>
+                    
+                    <!-- Analytics -->
+                    {% if user.subscription.analytics_access %}
+                    <li>
+                        <a href="{% url 'dashboard:analytics' %}" 
+                           class="{% if 'analytics' in request.resolver_match.url_name %}bg-gray-50 text-blue-600{% else %}text-gray-700 hover:text-blue-600 hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-chart-line h-6 w-6 shrink-0"></i>
+                            Analytics
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </li>
+            
+            <!-- AI Services -->
+            <li>
+                <div class="text-xs font-semibold leading-6 text-gray-400">AI SERVICES</div>
+                <ul role="list" class="-mx-2 mt-2 space-y-1">
+                    <!-- Conversational Agents -->
+                    <li>
+                        <div class="text-gray-700 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold cursor-pointer"
+                             x-data="{ open: false }" 
+                             x-on:click="open = !open">
+                            <i class="fas fa-comment-dots h-6 w-6 shrink-0"></i>
+                            Conversational
+                            <i class="fas fa-chevron-down ml-auto h-4 w-4 shrink-0 transition-transform"
+                               x-bind:class="{ 'rotate-180': open }"></i>
+                        </div>
+                        <ul class="mt-1 px-2" x-show="open" x-transition style="display: none;">
+                            <li><a href="{% url 'agents:chat_with' 'personal-assistant' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Personal Assistant</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'customer-support' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Customer Support</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'language-tutor' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Language Tutor</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'therapist' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Therapist</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Technical Agents -->
+                    <li>
+                        <div class="text-gray-700 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold cursor-pointer"
+                             x-data="{ open: false }" 
+                             x-on:click="open = !open">
+                            <i class="fas fa-code h-6 w-6 shrink-0"></i>
+                            Technical
+                            <i class="fas fa-chevron-down ml-auto h-4 w-4 shrink-0 transition-transform"
+                               x-bind:class="{ 'rotate-180': open }"></i>
+                        </div>
+                        <ul class="mt-1 px-2" x-show="open" x-transition style="display: none;">
+                            <li><a href="{% url 'agents:chat_with' 'code-reviewer' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Code Reviewer</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'security-auditor' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Security Auditor</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'devops-engineer' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">DevOps Engineer</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'data-scientist' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Data Scientist</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Creative Agents -->
+                    <li>
+                        <div class="text-gray-700 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold cursor-pointer"
+                             x-data="{ open: false }" 
+                             x-on:click="open = !open">
+                            <i class="fas fa-palette h-6 w-6 shrink-0"></i>
+                            Creative
+                            <i class="fas fa-chevron-down ml-auto h-4 w-4 shrink-0 transition-transform"
+                               x-bind:class="{ 'rotate-180': open }"></i>
+                        </div>
+                        <ul class="mt-1 px-2" x-show="open" x-transition style="display: none;">
+                            <li><a href="{% url 'agents:chat_with' 'content-writer' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Content Writer</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'social-media-manager' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Social Media</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'video-editor' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Video Editor</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'graphic-designer' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Graphic Designer</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Business Agents -->
+                    <li>
+                        <div class="text-gray-700 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold cursor-pointer"
+                             x-data="{ open: false }" 
+                             x-on:click="open = !open">
+                            <i class="fas fa-briefcase h-6 w-6 shrink-0"></i>
+                            Business
+                            <i class="fas fa-chevron-down ml-auto h-4 w-4 shrink-0 transition-transform"
+                               x-bind:class="{ 'rotate-180': open }"></i>
+                        </div>
+                        <ul class="mt-1 px-2" x-show="open" x-transition style="display: none;">
+                            <li><a href="{% url 'agents:chat_with' 'financial-advisor' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Financial Advisor</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'legal-consultant' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Legal Consultant</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'project-manager' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Project Manager</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'sales-coach' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Sales Coach</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Specialized Services -->
+                    <li>
+                        <div class="text-gray-700 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold cursor-pointer"
+                             x-data="{ open: false }" 
+                             x-on:click="open = !open">
+                            <i class="fas fa-star h-6 w-6 shrink-0"></i>
+                            Specialized
+                            <i class="fas fa-chevron-down ml-auto h-4 w-4 shrink-0 transition-transform"
+                               x-bind:class="{ 'rotate-180': open }"></i>
+                        </div>
+                        <ul class="mt-1 px-2" x-show="open" x-transition style="display: none;">
+                            <li><a href="{% url 'agents:chat_with' 'voice-agent' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Voice Agent</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'image-generator' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Image Generator</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'video-generator' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Video Generator</a></li>
+                            <li><a href="{% url 'agents:chat_with' 'task-automator' %}" class="block py-1 text-sm text-gray-600 hover:text-blue-600">Task Automator</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+            <!-- Account Section -->
+            <li class="mt-auto">
+                <ul role="list" class="-mx-2 space-y-1">
+                    <!-- Subscription Status -->
+                    <li>
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mb-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-medium text-gray-600">Current Plan</p>
+                                    <p class="text-sm font-semibold text-gray-900">{{ user.subscription.plan.name }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">{{ user.subscription.api_requests_used }}/{{ user.subscription.plan.api_requests_limit }}</p>
+                                    <div class="w-16 bg-gray-200 rounded-full h-1.5 mt-1">
+                                        <div class="bg-blue-600 h-1.5 rounded-full" style="width: {{ user.subscription.usage_percentage }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if user.subscription.plan.plan_type == 'free' %}
+                            <a href="{% url 'payments:plans' %}" class="mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                Upgrade Plan →
+                            </a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    
+                    <!-- Settings -->
+                    <li>
+                        <a href="{% url 'accounts:profile' %}" 
+                           class="{% if 'profile' in request.resolver_match.url_name %}bg-gray-50 text-blue-600{% else %}text-gray-700 hover:text-blue-600 hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-cog h-6 w-6 shrink-0"></i>
+                            Settings
+                        </a>
+                    </li>
+                    
+                    <!-- Billing -->
+                    <li>
+                        <a href="{% url 'payments:dashboard' %}" 
+                           class="{% if request.resolver_match.app_name == 'payments' %}bg-gray-50 text-blue-600{% else %}text-gray-700 hover:text-blue-600 hover:bg-gray-50{% endif %} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-credit-card h-6 w-6 shrink-0"></i>
+                            Billing
+                        </a>
+                    </li>
+                    
+                    <!-- Support -->
+                    <li>
+                        <a href="{% url 'core:support' %}" 
+                           class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                            <i class="fas fa-life-ring h-6 w-6 shrink-0"></i>
+                            Support
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</div>

@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Agents - OneLastAI{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <!-- Page header -->
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                AI Agents
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Choose from our collection of 24 specialized AI agents to assist with your tasks.
+            </p>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0">
+            <a 
+                href="{% url 'agents:chat' %}" 
+                class="inline-flex items-center rounded-md gradient-bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90"
+            >
+                <i class="fas fa-plus -ml-0.5 mr-1.5 h-5 w-5"></i>
+                Start Chat
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="border-b border-gray-200 mb-8" x-data="{ activeTab: 'all' }">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <button 
+                class="py-2 px-1 border-b-2 font-medium text-sm transition-colors"
+                x-bind:class="activeTab === 'all' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                x-on:click="activeTab = 'all'"
+            >
+                All Agents (24)
+            </button>
+            <button 
+                class="py-2 px-1 border-b-2 font-medium text-sm transition-colors"
+                x-bind:class="activeTab === 'conversational' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                x-on:click="activeTab = 'conversational'"
+            >
+                Conversational (4)
+            </button>
+            <button 
+                class="py-2 px-1 border-b-2 font-medium text-sm transition-colors"
+                x-bind:class="activeTab === 'technical' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                x-on:click="activeTab = 'technical'"
+            >
+                Technical (8)
+            </button>
+            <button 
+                class="py-2 px-1 border-b-2 font-medium text-sm transition-colors"
+                x-bind:class="activeTab === 'creative' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                x-on:click="activeTab = 'creative'"
+            >
+                Creative (8)
+            </button>
+            <button 
+                class="py-2 px-1 border-b-2 font-medium text-sm transition-colors"
+                x-bind:class="activeTab === 'business' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                x-on:click="activeTab = 'business'"
+            >
+                Business (4)
+            </button>
+        </nav>
+    </div>
+
+    <!-- Agents grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" x-data="{ activeTab: 'all' }">
+        <!-- Conversational Agents -->
+        <div x-show="activeTab === 'all' || activeTab === 'conversational'" class="contents">
+            <!-- Personal Assistant -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-user-tie text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">Conversational</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Personal Assistant</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Your intelligent personal assistant for daily tasks, scheduling, reminders, and general help.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.9 (1.2k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'personal-assistant' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Customer Support -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-headset text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">Conversational</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Customer Support</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Professional customer service agent for handling inquiries, complaints, and support tickets.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8 (856)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'customer-support' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Language Tutor -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-language text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">Conversational</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Language Tutor</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Expert language instructor for learning new languages with interactive lessons and practice.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.9 (2.1k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'language-tutor' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Therapist -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-heart text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">Conversational</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Therapist</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Supportive mental health companion for emotional support and therapeutic conversations.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8 (743)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'therapist' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Agents -->
+        <div x-show="activeTab === 'all' || activeTab === 'technical'" class="contents">
+            <!-- Code Reviewer -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-code text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">Technical</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Code Reviewer</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Expert code analysis, bug detection, and best practices recommendations for developers.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.9 (3.2k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'code-reviewer' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Security Auditor -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">Technical</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Security Auditor</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Cybersecurity specialist for vulnerability assessment and security best practices.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8 (1.8k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'security-auditor' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- DevOps Engineer -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-cogs text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">Technical</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">DevOps Engineer</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Infrastructure automation, CI/CD, and deployment optimization specialist.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.7 (1.4k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'devops-engineer' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Data Scientist -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-bar text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">Technical</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Data Scientist</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Advanced analytics, machine learning, and statistical analysis expert.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.9 (2.8k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'data-scientist' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Creative Agents -->
+        <div x-show="activeTab === 'all' || activeTab === 'creative'" class="contents">
+            <!-- Content Writer -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-pen-fancy text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded-full font-medium">Creative</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Content Writer</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Professional writer for blogs, articles, marketing copy, and creative content.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8 (2.5k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'content-writer' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Social Media Manager -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-hashtag text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded-full font-medium">Creative</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Social Media Manager</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Social media strategy, content planning, and engagement optimization specialist.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.7 (1.9k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'social-media-manager' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Image Generator -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-image text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded-full font-medium">Creative</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Image Generator</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">AI-powered image creation and visual content generation for any project.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.9 (4.1k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'image-generator' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Video Generator -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-video text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded-full font-medium">Creative</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Video Generator</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Advanced video creation and editing with AI-powered automation tools.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8 (1.7k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'video-generator' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Agents -->
+        <div x-show="activeTab === 'all' || activeTab === 'business'" class="contents">
+            <!-- Financial Advisor -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-dollar-sign text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">Business</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Financial Advisor</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Investment strategies, financial planning, and economic analysis expert.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8 (1.6k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'financial-advisor' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Legal Consultant -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-gavel text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">Business</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Legal Consultant</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Legal guidance, contract analysis, and regulatory compliance assistance.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.7 (891)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'legal-consultant' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project Manager -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-tasks text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">Business</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Project Manager</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Project planning, team coordination, and agile methodology specialist.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8 (2.2k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'project-manager' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sales Coach -->
+            <div class="agent-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-blue-300 animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="agent-icon w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-handshake text-white text-lg"></i>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">Business</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Sales Coach</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">Sales strategy, lead generation, and customer relationship management expert.</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center text-xs text-gray-500">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.9 (1.8k)</span>
+                    </div>
+                    <a href="{% url 'agents:chat_with' 'sales-coach' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        Chat now →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load more button (if needed for pagination) -->
+    <div class="mt-12 text-center">
+        <p class="text-sm text-gray-500 mb-4">
+            Showing all 24 AI agents. Can't find what you need?
+        </p>
+        <a 
+            href="{% url 'core:contact' %}" 
+            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
+            <i class="fas fa-lightbulb mr-2"></i>
+            Request Custom Agent
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}

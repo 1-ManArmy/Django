@@ -1,0 +1,106 @@
+<!-- User Menu Component -->
+<div class="relative" x-data="{ open: false }">
+    <div class="flex items-center">
+        <!-- User Info -->
+        <div class="hidden lg:flex lg:items-center lg:mr-3">
+            <div class="text-right">
+                <p class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.username }}</p>
+                <p class="text-xs text-gray-500">{{ user.subscription.plan.name }} Plan</p>
+            </div>
+        </div>
+        
+        <!-- Profile Picture -->
+        <button 
+            type="button" 
+            class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" 
+            x-on:click="open = !open"
+            aria-expanded="false" 
+            aria-haspopup="true"
+        >
+            <span class="absolute -inset-1.5"></span>
+            <span class="sr-only">Open user menu</span>
+            {% if user.profile_picture %}
+            <img class="h-8 w-8 rounded-full" src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}">
+            {% else %}
+            <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
+                <span class="text-sm font-medium text-white">{{ user.get_full_name.0|default:user.username.0|upper }}</span>
+            </div>
+            {% endif %}
+            
+            <!-- Online indicator -->
+            <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white"></span>
+        </button>
+    </div>
+
+    <!-- Dropdown menu -->
+    <div 
+        class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" 
+        x-show="open" 
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="transform opacity-0 scale-95"
+        x-transition:enter-end="transform opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-75"
+        x-transition:leave-start="transform opacity-100 scale-100"
+        x-transition:leave-end="transform opacity-0 scale-95"
+        x-on:click.away="open = false"
+        style="display: none;"
+        role="menu" 
+        aria-orientation="vertical" 
+        aria-labelledby="user-menu-button" 
+        tabindex="-1"
+    >
+        <!-- User Info (Mobile) -->
+        <div class="px-4 py-2 border-b border-gray-100 lg:hidden">
+            <p class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.username }}</p>
+            <p class="text-sm text-gray-500">{{ user.email }}</p>
+            <div class="mt-1">
+                <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                    {{ user.subscription.plan.name }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Menu Items -->
+        <a href="{% url 'accounts:profile' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+            <i class="fas fa-user mr-3 h-4 w-4 text-gray-400"></i>
+            Your Profile
+        </a>
+        
+        <a href="{% url 'accounts:settings' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+            <i class="fas fa-cog mr-3 h-4 w-4 text-gray-400"></i>
+            Settings
+        </a>
+        
+        <a href="{% url 'payments:dashboard' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+            <i class="fas fa-credit-card mr-3 h-4 w-4 text-gray-400"></i>
+            Billing
+        </a>
+        
+        <a href="{% url 'accounts:api_keys' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+            <i class="fas fa-key mr-3 h-4 w-4 text-gray-400"></i>
+            API Keys
+        </a>
+        
+        <hr class="my-1">
+        
+        <a href="{% url 'core:support' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+            <i class="fas fa-life-ring mr-3 h-4 w-4 text-gray-400"></i>
+            Support
+        </a>
+        
+        <a href="{% url 'core:docs' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+            <i class="fas fa-book mr-3 h-4 w-4 text-gray-400"></i>
+            Documentation
+        </a>
+        
+        <hr class="my-1">
+        
+        <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                <i class="fas fa-sign-out-alt mr-3 h-4 w-4 text-gray-400"></i>
+                Sign out
+            </button>
+        </form>
+    </div>
+</div>

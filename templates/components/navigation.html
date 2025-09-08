@@ -1,0 +1,135 @@
+<!-- Navigation Component -->
+{% load static %}
+
+<!-- Mobile sidebar overlay -->
+<div 
+    class="relative z-50 lg:hidden" 
+    x-data="{ sidebarOpen: false }" 
+    x-show="sidebarOpen" 
+    x-transition:enter="transition-opacity ease-linear duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-linear duration-300"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    style="display: none;"
+>
+    <!-- Background overlay -->
+    <div class="fixed inset-0 bg-gray-900/80" x-on:click="sidebarOpen = false"></div>
+
+    <div class="fixed inset-0 flex">
+        <!-- Mobile sidebar -->
+        <div 
+            class="relative mr-16 flex w-full max-w-xs flex-1"
+            x-show="sidebarOpen"
+            x-transition:enter="transition ease-in-out duration-300 transform"
+            x-transition:enter-start="-translate-x-full"
+            x-transition:enter-end="translate-x-0"
+            x-transition:leave="transition ease-in-out duration-300 transform"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="-translate-x-full"
+        >
+            <!-- Close button -->
+            <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+                <button type="button" class="-m-2.5 p-2.5" x-on:click="sidebarOpen = false">
+                    <span class="sr-only">Close sidebar</span>
+                    <i class="fas fa-times h-6 w-6 text-white"></i>
+                </button>
+            </div>
+
+            {% include 'components/sidebar.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- Static sidebar for desktop -->
+{% if user.is_authenticated %}
+<div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+    {% include 'components/sidebar.html' %}
+</div>
+{% else %}
+<!-- Public navigation -->
+<nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="{% url 'core:home' %}" class="flex-shrink-0">
+                    <img class="h-8 w-auto" src="{% static 'images/logo.svg' %}" alt="OneLastAI">
+                    <span class="ml-2 text-xl font-bold text-gray-900">OneLastAI</span>
+                </a>
+            </div>
+            
+            <!-- Navigation links -->
+            <div class="hidden md:flex md:items-center md:space-x-8">
+                <a href="{% url 'core:agents' %}" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    AI Agents
+                </a>
+                <a href="{% url 'payments:plans' %}" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    Pricing
+                </a>
+                <a href="{% url 'core:features' %}" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    Features
+                </a>
+                <a href="{% url 'core:contact' %}" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    Contact
+                </a>
+            </div>
+            
+            <!-- Auth buttons -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'accounts:login' %}" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                    Sign in
+                </a>
+                <a href="{% url 'accounts:register' %}" class="gradient-bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity">
+                    Get Started
+                </a>
+            </div>
+            
+            <!-- Mobile menu button -->
+            <div class="md:hidden flex items-center">
+                <button type="button" class="text-gray-500 hover:text-gray-900" x-on:click="mobileMenuOpen = !mobileMenuOpen">
+                    <span class="sr-only">Open main menu</span>
+                    <i class="fas fa-bars h-6 w-6"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile menu -->
+    <div 
+        class="md:hidden"
+        x-data="{ mobileMenuOpen: false }"
+        x-show="mobileMenuOpen"
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="transform opacity-0 scale-95"
+        x-transition:enter-end="transform opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-75"
+        x-transition:leave-start="transform opacity-100 scale-100"
+        x-transition:leave-end="transform opacity-0 scale-95"
+        style="display: none;"
+    >
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
+            <a href="{% url 'core:agents' %}" class="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
+                AI Agents
+            </a>
+            <a href="{% url 'payments:plans' %}" class="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
+                Pricing
+            </a>
+            <a href="{% url 'core:features' %}" class="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
+                Features
+            </a>
+            <a href="{% url 'core:contact' %}" class="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
+                Contact
+            </a>
+            <hr class="my-2">
+            <a href="{% url 'accounts:login' %}" class="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
+                Sign in
+            </a>
+            <a href="{% url 'accounts:register' %}" class="gradient-bg-primary text-white block px-3 py-2 rounded-md text-base font-medium">
+                Get Started
+            </a>
+        </div>
+    </div>
+</nav>
+{% endif %}

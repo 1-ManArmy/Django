@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - OneLastAI{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <!-- Page header -->
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Welcome back, {{ user.get_full_name|default:user.username }}!
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Here's what's happening with your AI agents today.
+            </p>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0">
+            <a 
+                href="{% url 'agents:chat' %}" 
+                class="ml-3 inline-flex items-center rounded-md gradient-bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+                <i class="fas fa-plus -ml-0.5 mr-1.5 h-5 w-5"></i>
+                Start New Chat
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <!-- Total Conversations -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg animate-fade-in">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                            <i class="fas fa-comments text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Conversations</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.total_conversations }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Requests -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                            <i class="fas fa-exchange-alt text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">API Requests This Month</dt>
+                            <dd class="text-lg font-medium text-gray-900">
+                                {{ user.subscription.api_requests_used|default:0 }}
+                                <span class="text-sm text-gray-500">/ {{ user.subscription.plan.api_requests_limit }}</span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Agents -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Active Agents</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ stats.active_agents }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Status -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg animate-fade-in" style="animation-delay: 0.3s;">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 {{ user.subscription.plan.plan_type == 'free' and 'bg-gray-500' or 'bg-yellow-500' }} rounded-md flex items-center justify-center">
+                            <i class="fas fa-crown text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Current Plan</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ user.subscription.plan.name }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Recent Conversations -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow-sm rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Conversations</h3>
+                        <a href="{% url 'agents:conversations' %}" class="text-sm text-blue-600 hover:text-blue-500">
+                            View all
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="divide-y divide-gray-200">
+                    {% for conversation in recent_conversations %}
+                    <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                                        <i class="fas {{ conversation.agent.get_icon }} text-white text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium text-gray-900 truncate">
+                                        {{ conversation.agent.get_display_name }}
+                                    </p>
+                                    <p class="text-sm text-gray-500 truncate">
+                                        {{ conversation.last_message_preview|truncatechars:50 }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-500">{{ conversation.updated_at|timesince }} ago</span>
+                                <a 
+                                    href="{% url 'agents:conversation' conversation.id %}" 
+                                    class="text-blue-600 hover:text-blue-500"
+                                >
+                                    <i class="fas fa-arrow-right text-sm"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="px-6 py-8 text-center">
+                        <i class="fas fa-comments text-gray-300 text-3xl mb-3"></i>
+                        <p class="text-gray-500">No conversations yet. Start chatting with an AI agent!</p>
+                        <a 
+                            href="{% url 'agents:chat' %}" 
+                            class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 transition-colors"
+                        >
+                            Start First Conversation
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div class="space-y-6">
+            <!-- Usage Overview -->
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Usage Overview</h3>
+                
+                <!-- API Usage -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">API Requests</span>
+                        <span class="text-sm text-gray-500">
+                            {{ user.subscription.api_requests_used|default:0 }} / {{ user.subscription.plan.api_requests_limit }}
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                            class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                            style="width: {{ user.subscription.usage_percentage }}%"
+                        ></div>
+                    </div>
+                </div>
+
+                <!-- Conversations -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Conversations</span>
+                        <span class="text-sm text-gray-500">
+                            {{ stats.total_conversations }} / {{ user.subscription.plan.max_conversations }}
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                            class="bg-green-600 h-2 rounded-full transition-all duration-300" 
+                            style="width: {% widthratio stats.total_conversations user.subscription.plan.max_conversations 100 %}%"
+                        ></div>
+                    </div>
+                </div>
+
+                <!-- Billing Period -->
+                <div class="text-sm text-gray-500">
+                    <p>Billing period ends in {{ user.subscription.days_remaining }} days</p>
+                    <p class="mt-1">Resets on {{ user.subscription.current_period_end|date:"M d, Y" }}</p>
+                </div>
+                
+                {% if user.subscription.plan.plan_type == 'free' %}
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <a 
+                        href="{% url 'payments:plans' %}" 
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white gradient-bg-primary hover:opacity-90 transition-opacity"
+                    >
+                        Upgrade Plan
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                    <a 
+                        href="{% url 'agents:list' %}" 
+                        class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        <i class="fas fa-robot text-blue-500 mr-3"></i>
+                        Browse AI Agents
+                    </a>
+                    
+                    <a 
+                        href="{% url 'accounts:api_keys' %}" 
+                        class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        <i class="fas fa-key text-purple-500 mr-3"></i>
+                        Manage API Keys
+                    </a>
+                    
+                    <a 
+                        href="{% url 'payments:dashboard' %}" 
+                        class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        <i class="fas fa-credit-card text-green-500 mr-3"></i>
+                        Billing Settings
+                    </a>
+                    
+                    <a 
+                        href="{% url 'core:docs' %}" 
+                        class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        <i class="fas fa-book text-yellow-500 mr-3"></i>
+                        Documentation
+                    </a>
+                </div>
+            </div>
+
+            <!-- Featured Agents -->
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Featured Agents</h3>
+                <div class="space-y-3">
+                    {% for agent in featured_agents %}
+                    <a 
+                        href="{% url 'agents:chat_with' agent.slug %}" 
+                        class="block p-3 rounded-md border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all"
+                    >
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                                    <i class="fas {{ agent.get_icon }} text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-900">{{ agent.get_display_name }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ agent.description }}</p>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Animate counters
+    function animateCounter(element, target) {
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current);
+        }, 20);
+    }
+
+    // Initialize counter animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate usage percentage
+        setTimeout(() => {
+            const usageBar = document.querySelector('.bg-blue-600');
+            if (usageBar) {
+                usageBar.style.width = '0%';
+                setTimeout(() => {
+                    usageBar.style.width = '{{ user.subscription.usage_percentage }}%';
+                }, 100);
+            }
+        }, 500);
+    });
+</script>
+{% endblock %}
