@@ -37,7 +37,9 @@ from .serializers import (
     PaymentSerializer, InvoiceSerializer, PaymentMethodSerializer
 )
 from .forms import (
-    SubscriptionUpgradeForm, PaymentMethodForm, CouponCodeForm
+    SubscriptionPlanForm, SubscriptionSignupForm, PaymentMethodForm, 
+    OneTimePaymentForm, DiscountCouponForm, CouponValidationForm,
+    InvoiceSearchForm
 )
 
 logger = logging.getLogger(__name__)

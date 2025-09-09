@@ -17,7 +17,7 @@ import hashlib
 import secrets
 from typing import Optional, Dict, Any, List
 
-from .models import User, UserProfile, APIKey
+from .models import User, UserProfile, UserApiKey
 from .utils import generate_username_suggestions, get_client_ip, get_user_agent
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class UserRegistrationService:
                 )
                 
                 # Generate initial API key
-                api_key = APIKey.objects.create(
+                api_key = UserApiKey.objects.create(
                     user=user,
                     name="Default API Key",
                     key=UserRegistrationService._generate_api_key()
@@ -489,18 +489,18 @@ class APIKeyService:
     """Service for API key management"""
     
     @staticmethod
-    def generate_api_key(user: User, name: str, description: str = '') -> APIKey:
+    def generate_api_key(user: User, name: str, description: str = '') -> UserApiKey:
         """Generate new API key for user"""
         try:
             # Check limits
-            existing_keys = APIKey.objects.filter(user=user, is_active=True).count()
+            existing_keys = UserApiKey.objects.filter(user=user, is_active=True).count()
             max_keys = 5 if user.subscription_tier == 'enterprise' else 3
             
             if existing_keys >= max_keys:
                 raise ValidationError(f"Maximum {max_keys} API keys allowed")
             
             # Generate key
-            api_key = APIKey.objects.create(
+            api_key = UserApiKey.objects.create(
                 user=user,
                 name=name,
                 description=description,
@@ -518,7 +518,7 @@ class APIKeyService:
     def revoke_api_key(user: User, key_id: int) -> bool:
         """Revoke API key"""
         try:
-            api_key = APIKey.objects.get(id=key_id, user=user, is_active=True)
+            api_key = UserApiKey.objects.get(id=key_id, user=user, is_active=True)
             api_key.is_active = False
             api_key.revoked_at = timezone.now()
             api_key.save()
@@ -526,7 +526,7 @@ class APIKeyService:
             logger.info(f"API key revoked: {api_key.name}")
             return True
             
-        except APIKey.DoesNotExist:
+        except UserApiKey.DoesNotExist:
             logger.error(f"API key not found: {key_id}")
             return False
         except Exception as e:

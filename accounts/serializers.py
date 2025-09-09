@@ -11,7 +11,7 @@ from django.utils import timezone
 from allauth.socialaccount.models import SocialAccount
 import logging
 
-from .models import User, UserProfile, APIKey
+from .models import User, UserProfile, UserApiKey
 
 logger = logging.getLogger(__name__)
 
@@ -305,7 +305,7 @@ class APIKeySerializer(serializers.ModelSerializer):
     key = serializers.CharField(read_only=True)
     
     class Meta:
-        model = APIKey
+        model = UserApiKey
         fields = [
             'id', 'name', 'description', 'key', 'created_at',
             'last_used_at', 'is_active', 'usage_count'

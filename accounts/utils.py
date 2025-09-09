@@ -18,12 +18,12 @@ from typing import Optional, List, Dict, Any
 from user_agents import parse
 import requests
 
-from .models import User, APIKey
+from .models import User, UserApiKey
 
 logger = logging.getLogger(__name__)
 
 
-def generate_api_key(user: User, name: str = None) -> APIKey:
+def generate_api_key(user: User, name: str = None) -> UserApiKey:
     """
     Generate a secure API key for the user
     """
@@ -33,7 +33,7 @@ def generate_api_key(user: User, name: str = None) -> APIKey:
     # Generate secure key
     key = f"ola_{secrets.token_urlsafe(32)}"
     
-    api_key = APIKey.objects.create(
+    api_key = UserApiKey.objects.create(
         user=user,
         name=name,
         key=key

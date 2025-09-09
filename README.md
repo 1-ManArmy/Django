@@ -3,14 +3,14 @@
 <div align="center">
 
 ![OneLastAI Logo](https://img.shields.io/badge/OneLastAI-Enterprise%20Platform-blue?style=for-the-badge&logo=robot)
-[![Ruby Version](https://img.shields.io/badge/Ruby-3.3.0-red?style=flat-square&logo=ruby)](https://www.ruby-lang.org/)
-[![Rails Version](https://img.shields.io/badge/Rails-7.1.3-red?style=flat-square&logo=rubyonrails)](https://rubyonrails.org/)
+[![Python Version](https://img.shields.io/badge/Python-3.12+-blue?style=flat-square&logo=python)](https://www.python.org/)
+[![Django Version](https://img.shields.io/badge/Django-5.2+-green?style=flat-square&logo=django)](https://www.djangoproject.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](https://github.com/1-ManArmy/fluffy-space-garbanzo)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](https://github.com/1-ManArmy/Django)
 
-**The Ultimate AI Agent Network - 24 Specialized AI Agents in One Powerful Platform**
+**The Ultimate AI Agent Network - 27 Specialized AI Agents in One Powerful Platform**
 
-[🚀 Live Demo](https://onelastai.com) • [📖 Documentation](docs/) • [🛠️ API Reference](docs/api.md) • [💬 Community](https://github.com/1-ManArmy/fluffy-space-garbanzo/discussions)
+[🚀 Live Demo](https://onelastai.com) • [📖 Documentation](docs/) • [🛠️ API Reference](docs/api.md) • [💬 Community](https://github.com/1-ManArmy/Django/discussions)
 
 </div>
 
@@ -18,17 +18,20 @@
 
 ## ✨ **Platform Overview**
 
-OneLastAI is an enterprise-grade AI agent network that brings together 24 specialized AI agents, each designed for specific use cases. From creative content generation to business intelligence, our platform provides everything you need for AI-powered productivity.
+OneLastAI is an enterprise-grade AI agent network that brings together 27 specialized AI agents, each designed for specific use cases. From creative content generation to business intelligence, our platform provides everything you need for AI-powered productivity.
 
 ### 🎯 **Key Features**
 
-- **24 Specialized AI Agents** - Each with unique capabilities and personalities
-- **Enterprise Authentication** - SSO powered by Keycloak (OpenID Connect)
-- **Multi-Payment Gateway** - Stripe, PayPal, and Lemon Squeezy support
+- **27 Specialized AI Agents** - Each with unique capabilities and personalities
+- **Django REST Framework** - Robust API architecture with JWT authentication
+- **Multi-AI Provider Support** - OpenAI, Anthropic Claude, Google AI integration
+- **WebSocket Real-time Chat** - Live agent interactions with Django Channels
+- **Multi-Payment Gateway** - Stripe and PayPal integration
 - **Creative AI Integration** - RunwayML for video/image generation
-- **Production Infrastructure** - MongoDB Atlas, Render deployment, Docker orchestration
-- **Real-time Monitoring** - Health checks, analytics, and error tracking
-- **API-First Design** - RESTful APIs for all platform features
+- **Enterprise Authentication** - Django Allauth with social login support
+- **Production Infrastructure** - PostgreSQL, Redis, Docker orchestration
+- **Real-time Monitoring** - Celery task queue, comprehensive logging
+- **API-First Design** - RESTful APIs with OpenAPI documentation
 
 ---
 
@@ -83,23 +86,27 @@ OneLastAI is an enterprise-grade AI agent network that brings together 24 specia
 
 ### **Prerequisites**
 
-- Ruby 3.3.0+
-- Node.js 18+
-- MongoDB Atlas account
-- Redis 6+ (optional, for caching)
+- Python 3.12+
+- PostgreSQL 13+ or SQLite (for development)
+- Redis 6+ (for caching and Celery)
+- Node.js 18+ (for frontend assets)
 
 ### **1. Clone & Setup**
 
 ```bash
 # Clone the repository
-git clone https://github.com/1-ManArmy/fluffy-space-garbanzo.git
-cd fluffy-space-garbanzo
+git clone https://github.com/1-ManArmy/Django.git
+cd Django
 
-# Make setup script executable
-chmod +x setup.sh
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Run automated setup
-./setup.sh
+# Install dependencies
+pip install -r requirements.txt
+
+# Install development dependencies
+pip install -r requirements/development.txt
 ```
 
 ### **2. Environment Configuration**
@@ -112,40 +119,68 @@ cp .env.example .env
 nano .env
 ```
 
-**Required API Keys:**
+**Required Configuration:**
 ```bash
+# Django Settings
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database (PostgreSQL for production, SQLite for development)
+DATABASE_URL=postgresql://user:password@localhost:5432/onelastai
+# or for SQLite: DATABASE_URL=sqlite:///db.sqlite3
+
 # AI Services (choose at least one)
 OPENAI_API_KEY=sk-...                    # OpenAI GPT models
 ANTHROPIC_API_KEY=sk-ant-...             # Claude models
+GOOGLE_AI_API_KEY=...                    # Google AI models
 RUNWAYML_API_KEY=...                     # Creative AI
-GOOGLE_AI_API_KEY=...                    # agent models
 
-# Database & Infrastructure
-MONGODB_URI=mongodb+srv://...            # MongoDB Atlas
-
-# Authentication
-KEYCLOAK_CLIENT_ID=...                  # Keycloak OIDC
-KEYCLOAK_CLIENT_SECRET=...              # Keycloak OIDC
+# Redis (for caching and Celery)
+REDIS_URL=redis://localhost:6379/0
 
 # Payment Processing (optional)
-STRIPE_SECRET_KEY=sk_live_...            # Stripe payments
+STRIPE_SECRET_KEY=sk_test_...            # Stripe payments
+STRIPE_PUBLISHABLE_KEY=pk_test_...       # Stripe frontend
 PAYPAL_CLIENT_ID=...                     # PayPal payments
+PAYPAL_CLIENT_SECRET=...                 # PayPal payments
+
+# Email Configuration
+EMAIL_HOST=smtp.gmail.com
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
 ```
 
-### **3. Launch Application**
+### **3. Database & Migration Setup**
+
+```bash
+# Run database migrations
+python manage.py migrate
+
+# Create superuser account
+python manage.py createsuperuser
+
+# Load initial data (optional)
+python manage.py loaddata fixtures/initial_data.json
+```
+
+### **4. Launch Application**
 
 ```bash
 # Development mode
-bundle exec rails server
+python manage.py runserver
 
-# Production mode
-RAILS_ENV=production bundle exec rails server
+# With Celery worker (separate terminal)
+celery -A config worker -l info
+
+# With Celery beat scheduler (separate terminal)
+celery -A config beat -l info
 
 # Docker deployment
 docker-compose up -d
 ```
 
-🎉 **Your platform is now running at http://localhost:3000**
+🎉 **Your platform is now running at http://localhost:8000**
 
 ---
 
@@ -153,19 +188,22 @@ docker-compose up -d
 
 ### **Cloud Architecture**
 
-- **Database**: MongoDB Atlas with automatic backups
-- **Compute**: Render with automatic scaling
-- **Storage**: Cloudinary for media assets
-- **Caching**: Redis for sessions and data caching
-- **Monitoring**: New Relic, Sentry error tracking
-- **Security**: Keycloak SSO (OIDC)
+- **Database**: PostgreSQL with automatic backups (SQLite for development)
+- **Compute**: Docker containers with horizontal scaling
+- **Storage**: Local media storage (S3-compatible for production)
+- **Caching**: Redis for sessions, caching, and message broker
+- **Task Queue**: Celery with Redis broker
+- **Monitoring**: Django logging, error tracking
+- **Security**: Django Allauth with social authentication
 
 ### **Payment Processing**
 
-```ruby
+```python
 # Multi-provider payment support
-payment_service = PaymentService.new(provider: :stripe)
-result = payment_service.process_payment(29.99, currency: 'usd')
+from payments.services import PaymentService
+
+payment_service = PaymentService(provider='stripe')
+result = payment_service.process_payment(29.99, currency='usd')
 
 # Subscription management
 subscription = payment_service.create_subscription(customer_id, plan_id)
@@ -173,14 +211,16 @@ subscription = payment_service.create_subscription(customer_id, plan_id)
 
 ### **AI Service Integration**
 
-```ruby
+```python
 # Universal AI service
-ai_service = BaseAiService.new(provider: :openai, model: 'gpt-4')
+from ai_services.services import AIServiceFactory
+
+ai_service = AIServiceFactory.create_service(provider='openai', model='gpt-4')
 response = ai_service.complete("Analyze this business data...")
 
 # Creative AI with RunwayML
-runway = BaseAiService.new(provider: :runwayml)
-video_url = runway.generate_video("A sunset over mountains", duration: 10)
+runway_service = AIServiceFactory.create_service(provider='runwayml')
+video_url = runway_service.generate_video("A sunset over mountains", duration=10)
 ```
 
 ---
@@ -271,34 +311,42 @@ Tip: ensure the selected `model` is available in your Ollama service and listed 
 ### **Adding New Agents**
 
 1. **Create Agent Engine**:
-```ruby
-# app/services/agents/your_agent_engine.rb
-class YourAgentEngine < BaseAgentEngine
-  def initialize
-    super(
-      name: "YourAgent",
-      description: "Your agent description",
-      capabilities: ["capability1", "capability2"]
-    )
-  end
+```python
+# agents/engines/your_agent_engine.py
+from agents.engines.base import BaseAgentEngine
 
-  def process_message(message, context = {})
-    # Your agent logic here
-  end
-end
+class YourAgentEngine(BaseAgentEngine):
+    def __init__(self):
+        super().__init__(
+            name="YourAgent",
+            description="Your agent description",
+            capabilities=["capability1", "capability2"]
+        )
+
+        # Your agent logic here
+        if context is None:
+            context = {}
+        return {"response": "Your agent response"}
 ```
 
-2. **Create Controller**:
-```ruby
-# app/controllers/your_agent_controller.rb
-class YourAgentController < ApplicationController
-  def index
-    @agent = YourAgentEngine.new
-  end
-end
-```
+2. **Create Views**:
+```python
+# agents/views.py
+from django.shortcuts import render
+from agents.engines.your_agent_engine import YourAgentEngine
 
-3. **Add Routes**:
+def your_agent_view(request):
+    agent = YourAgentEngine()
+    return render(request, 'agents/your_agent.html', {'agent': agent})
+3. **Add URLs**:
+```python
+# agents/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('your-agent/', views.your_agent_view, name='your_agent'),
+]
 ```ruby
 # config/routes.rb
 get '/your-agent', to: 'your_agent#index'
@@ -308,13 +356,13 @@ get '/your-agent', to: 'your_agent#index'
 
 ```bash
 # Run test suite
-bundle exec rspec
+python manage.py test
 
 # Run specific agent tests
-bundle exec rspec spec/services/agents/
+python manage.py test agents.tests
 
 # Integration tests
-bundle exec rspec spec/controllers/
+python manage.py test api.tests
 ```
 
 ---
@@ -338,9 +386,9 @@ docker-compose up -d --scale web=3
 ./setup.sh --production
 
 # Manual deployment
-RAILS_ENV=production bundle exec rails db:migrate
-RAILS_ENV=production bundle exec rails assets:precompile
-RAILS_ENV=production bundle exec rails server
+DJANGO_SETTINGS_MODULE=config.settings.production python manage.py migrate
+DJANGO_SETTINGS_MODULE=config.settings.production python manage.py collectstatic --noinput
+DJANGO_SETTINGS_MODULE=config.settings.production gunicorn config.wsgi:application
 ```
 
 ### **Heroku Deployment**
@@ -349,7 +397,7 @@ RAILS_ENV=production bundle exec rails server
 # Deploy to Heroku
 heroku create your-onelastai-app
 git push heroku main
-heroku run rails db:migrate
+heroku run python manage.py migrate
 ```
 
 ---
@@ -386,7 +434,7 @@ git clone https://github.com/your-username/fluffy-space-garbanzo.git
 git checkout -b feature/amazing-new-agent
 
 # Make your changes and test
-bundle exec rspec
+python manage.py test
 
 # Submit pull request
 git push origin feature/amazing-new-agent

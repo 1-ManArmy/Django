@@ -9,7 +9,8 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import Agent, AgentConversation, Message
+from .models import Agent, AgentConversation
+from ai_services.models import Message
 from .serializers import (
     AgentConversationSerializer,
     MessageSerializer,

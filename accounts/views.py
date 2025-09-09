@@ -33,7 +33,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 
-from .models import User, UserProfile, APIKey
+from .models import User, UserProfile, UserApiKey
 from .forms import (
     CustomUserCreationForm, 
     CustomUserChangeForm, 
@@ -240,7 +240,7 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
         stats = UserAnalyticsService.get_user_stats(user)
         
         # Get API keys
-        api_keys = APIKey.objects.filter(user=user, is_active=True)
+        api_keys = UserApiKey.objects.filter(user=user, is_active=True)
         
         context.update({
             'user_stats': stats,
@@ -315,7 +315,7 @@ def generate_api_key_view(request):
         name = request.data.get('name', f'API Key {timezone.now().strftime("%Y-%m-%d")}')
         
         # Check if user can create more API keys
-        existing_keys = APIKey.objects.filter(user=request.user, is_active=True).count()
+        existing_keys = UserApiKey.objects.filter(user=request.user, is_active=True).count()
         max_keys = 5 if request.user.subscription_tier == 'enterprise' else 3
         
         if existing_keys >= max_keys:
@@ -347,7 +347,7 @@ def revoke_api_key_view(request, key_id):
     """Revoke API key"""
     try:
         api_key = get_object_or_404(
-            APIKey, 
+            UserApiKey, 
             id=key_id, 
             user=request.user, 
             is_active=True
@@ -409,7 +409,7 @@ def account_deactivation_view(request):
         user.save()
         
         # Revoke all API keys
-        APIKey.objects.filter(user=user, is_active=True).update(
+        UserApiKey.objects.filter(user=user, is_active=True).update(
             is_active=False,
             revoked_at=timezone.now()
         )

@@ -4,7 +4,8 @@ DRF serializers for AI agents, conversations, and messages
 """
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Agent, AgentConversation, Message
+from .models import Agent, AgentConversation
+from ai_services.models import Message
 
 User = get_user_model()
 

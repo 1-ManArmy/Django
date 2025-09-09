@@ -5,3 +5,112 @@ INFO 2025-09-09 04:28:36,243 autoreload 5187 132110248952448 Watching for file c
 INFO 2025-09-09 06:01:10,739 autoreload 5187 132110248952448 /usr/local/python/3.12.1/lib/python3.12/site-packages/asgiref/sync.py changed, reloading.
 INFO 2025-09-09 06:01:11,034 autoreload 48527 132725954437760 Watching for file changes with StatReloader
 INFO 2025-09-09 07:24:09,308 autoreload 6083 136835364950656 Watching for file changes with StatReloader
+INFO 2025-09-09 10:06:55,999 autoreload 5373 138422539223680 Watching for file changes with StatReloader
+INFO 2025-09-09 10:55:33,632 autoreload 27066 127073464976000 Watching for file changes with StatReloader
+INFO 2025-09-09 10:56:56,040 autoreload 28378 125384454431360 Watching for file changes with StatReloader
+INFO 2025-09-09 10:57:37,741 autoreload 28378 125384454431360 /workspaces/codespaces-django/config/settings/base.py changed, reloading.
+INFO 2025-09-09 10:57:39,236 autoreload 28730 136151598482048 Watching for file changes with StatReloader
+INFO 2025-09-09 10:59:57,092 autoreload 30633 123396582376064 Watching for file changes with StatReloader
+INFO 2025-09-09 11:00:30,873 autoreload 30633 123396582376064 /workspaces/codespaces-django/api/pagination.py changed, reloading.
+INFO 2025-09-09 11:00:31,732 autoreload 31001 132441487659648 Watching for file changes with StatReloader
+INFO 2025-09-09 11:00:46,227 autoreload 31001 132441487659648 /workspaces/codespaces-django/api/pagination.py changed, reloading.
+INFO 2025-09-09 11:00:47,146 autoreload 31219 134402232169088 Watching for file changes with StatReloader
+INFO 2025-09-09 11:02:25,754 autoreload 32648 127609368195712 Watching for file changes with StatReloader
+INFO 2025-09-09 11:04:40,655 autoreload 32648 127609368195712 /workspaces/codespaces-django/config/settings/base.py changed, reloading.
+INFO 2025-09-09 11:04:41,639 autoreload 33670 123208104706688 Watching for file changes with StatReloader
+INFO 2025-09-09 11:05:25,099 autoreload 33670 123208104706688 /workspaces/codespaces-django/config/settings/base.py changed, reloading.
+INFO 2025-09-09 11:05:25,888 autoreload 34106 125220981105280 Watching for file changes with StatReloader
+INFO 2025-09-09 11:11:00,498 autoreload 37206 137046627000960 Watching for file changes with StatReloader
+INFO 2025-09-09 11:11:36,286 autoreload 37206 137046627000960 /workspaces/codespaces-django/accounts/serializers.py changed, reloading.
+INFO 2025-09-09 11:11:37,324 autoreload 37573 127100787802752 Watching for file changes with StatReloader
+INFO 2025-09-09 11:12:04,133 autoreload 37573 127100787802752 /workspaces/codespaces-django/accounts/serializers.py changed, reloading.
+INFO 2025-09-09 11:12:05,310 autoreload 37866 126145979056768 Watching for file changes with StatReloader
+INFO 2025-09-09 11:17:54,985 autoreload 41091 134956896539264 Watching for file changes with StatReloader
+INFO 2025-09-09 11:18:36,107 autoreload 41091 134956896539264 /workspaces/codespaces-django/config/settings/base.py changed, reloading.
+INFO 2025-09-09 11:18:36,908 autoreload 41458 140558628110976 Watching for file changes with StatReloader
+INFO 2025-09-09 11:20:04,006 autoreload 42809 133574186144384 Watching for file changes with StatReloader
+INFO 2025-09-09 11:46:08,515 autoreload 42809 133574186144384 /workspaces/codespaces-django/accounts/urls.py changed, reloading.
+INFO 2025-09-09 11:46:09,515 autoreload 53801 131866289193600 Watching for file changes with StatReloader
+INFO 2025-09-09 11:51:56,300 autoreload 57073 137660579242624 Watching for file changes with StatReloader
+INFO 2025-09-09 12:01:14,544 autoreload 57073 137660579242624 /workspaces/codespaces-django/agents/api_views.py changed, reloading.
+INFO 2025-09-09 12:01:15,482 autoreload 61068 130271829164672 Watching for file changes with StatReloader
+INFO 2025-09-09 12:05:19,394 autoreload 63502 135705122087552 Watching for file changes with StatReloader
+INFO 2025-09-09 12:50:45,306 autoreload 83301 138293270545024 Watching for file changes with StatReloader
+INFO 2025-09-09 12:53:08,988 autoreload 83301 138293270545024 /workspaces/codespaces-django/payments/views.py changed, reloading.
+INFO 2025-09-09 12:53:10,182 autoreload 84494 132170071274112 Watching for file changes with StatReloader
+INFO 2025-09-09 12:53:41,482 autoreload 84494 132170071274112 /workspaces/codespaces-django/payments/views.py changed, reloading.
+INFO 2025-09-09 12:53:42,733 autoreload 84818 124469702881920 Watching for file changes with StatReloader
+INFO 2025-09-09 12:53:54,295 autoreload 85484 140437623857792 Watching for file changes with StatReloader
+INFO 2025-09-09 13:12:31,863 autoreload 94739 131321617609344 Watching for file changes with StatReloader
+INFO 2025-09-09 13:14:48,377 autoreload 94739 131321617609344 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:14:48,628 autoreload 85484 140437623857792 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:14:49,820 autoreload 96003 130982815601280 Watching for file changes with StatReloader
+INFO 2025-09-09 13:14:50,035 autoreload 96004 140267258782336 Watching for file changes with StatReloader
+INFO 2025-09-09 13:31:29,723 autoreload 96003 130982815601280 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:31:29,734 autoreload 96004 140267258782336 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:31:31,069 autoreload 103139 132506764808832 Watching for file changes with StatReloader
+INFO 2025-09-09 13:31:31,101 autoreload 103140 139041117016704 Watching for file changes with StatReloader
+INFO 2025-09-09 13:31:41,429 autoreload 103140 139041117016704 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:31:41,598 autoreload 103139 132506764808832 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:31:42,940 autoreload 103389 136094890398336 Watching for file changes with StatReloader
+INFO 2025-09-09 13:31:43,246 autoreload 103513 127971291247232 Watching for file changes with StatReloader
+INFO 2025-09-09 13:31:50,383 autoreload 103389 136094890398336 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:31:50,592 autoreload 103513 127971291247232 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:31:51,613 autoreload 104080 125014249284224 Watching for file changes with StatReloader
+INFO 2025-09-09 13:31:51,955 autoreload 104098 140405759431296 Watching for file changes with StatReloader
+INFO 2025-09-09 13:31:52,576 autoreload 104104 127675696087680 Watching for file changes with StatReloader
+INFO 2025-09-09 13:33:10,465 autoreload 104104 127675696087680 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:33:10,709 autoreload 104080 125014249284224 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:33:11,127 autoreload 104098 140405759431296 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:33:11,271 autoreload 104960 135551595111040 Watching for file changes with StatReloader
+INFO 2025-09-09 13:33:11,635 autoreload 104961 139145056846464 Watching for file changes with StatReloader
+INFO 2025-09-09 13:33:12,254 autoreload 104971 130158825656960 Watching for file changes with StatReloader
+INFO 2025-09-09 13:34:43,790 autoreload 104971 130158825656960 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:34:43,879 autoreload 104960 135551595111040 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:34:44,308 autoreload 104961 139145056846464 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 13:34:44,644 autoreload 105893 135386935542400 Watching for file changes with StatReloader
+INFO 2025-09-09 13:34:44,801 autoreload 105894 136990007980672 Watching for file changes with StatReloader
+INFO 2025-09-09 13:34:45,255 autoreload 105900 129144469381760 Watching for file changes with StatReloader
+INFO 2025-09-09 13:35:58,977 autoreload 107026 127408881005184 Watching for file changes with StatReloader
+INFO 2025-09-09 14:09:13,449 autoreload 105893 135386935542400 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:09:13,567 autoreload 105894 136990007980672 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:09:13,568 autoreload 105900 129144469381760 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:09:14,299 autoreload 107026 127408881005184 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:09:14,523 autoreload 121238 139330497753728 Watching for file changes with StatReloader
+INFO 2025-09-09 14:09:14,561 autoreload 121244 127381136716416 Watching for file changes with StatReloader
+INFO 2025-09-09 14:09:14,786 autoreload 121246 130153580245632 Watching for file changes with StatReloader
+INFO 2025-09-09 14:09:15,996 autoreload 121262 131133698429568 Watching for file changes with StatReloader
+INFO 2025-09-09 14:10:29,213 autoreload 121262 131133698429568 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:10:29,368 autoreload 121244 127381136716416 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:10:29,527 autoreload 121246 130153580245632 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:10:30,052 autoreload 121238 139330497753728 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:10:30,966 autoreload 122002 135162039788160 Watching for file changes with StatReloader
+INFO 2025-09-09 14:10:30,989 autoreload 122001 138060413985408 Watching for file changes with StatReloader
+INFO 2025-09-09 14:10:31,517 autoreload 122006 127058608022144 Watching for file changes with StatReloader
+INFO 2025-09-09 14:10:31,900 autoreload 122040 135458480734848 Watching for file changes with StatReloader
+INFO 2025-09-09 14:13:07,522 autoreload 122040 135458480734848 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:13:07,738 autoreload 122002 135162039788160 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:13:07,928 autoreload 122006 127058608022144 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:13:09,098 autoreload 123407 128740444537472 Watching for file changes with StatReloader
+INFO 2025-09-09 14:13:09,653 autoreload 123411 123533592208000 Watching for file changes with StatReloader
+INFO 2025-09-09 14:13:10,432 autoreload 123430 124612578845312 Watching for file changes with StatReloader
+INFO 2025-09-09 14:29:08,718 autoreload 123411 123533592208000 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:29:08,747 autoreload 123407 128740444537472 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:29:08,770 autoreload 123430 124612578845312 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:29:10,329 autoreload 130305 134666458092160 Watching for file changes with StatReloader
+INFO 2025-09-09 14:29:10,362 autoreload 130317 127972001071744 Watching for file changes with StatReloader
+INFO 2025-09-09 14:29:10,422 autoreload 130304 124911006982784 Watching for file changes with StatReloader
+INFO 2025-09-09 14:48:56,283 autoreload 130304 124911006982784 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:48:56,312 autoreload 130317 127972001071744 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:48:56,998 autoreload 130305 134666458092160 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:48:57,887 autoreload 138726 123395358380672 Watching for file changes with StatReloader
+INFO 2025-09-09 14:48:58,518 autoreload 138725 129342413562496 Watching for file changes with StatReloader
+INFO 2025-09-09 14:48:59,671 autoreload 138785 139438557381248 Watching for file changes with StatReloader
+INFO 2025-09-09 14:49:00,741 autoreload 138725 129342413562496 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:49:01,384 autoreload 138726 123395358380672 /workspaces/codespaces-django/payments/urls.py changed, reloading.
+INFO 2025-09-09 14:49:02,797 autoreload 138864 133132787118720 Watching for file changes with StatReloader
+INFO 2025-09-09 14:49:03,228 autoreload 138868 132358807601792 Watching for file changes with StatReloader
+INFO 2025-09-09 14:51:34,331 autoreload 140864 130276883387008 Watching for file changes with StatReloader
+INFO 2025-09-09 14:56:48,539 autoreload 143804 129831878541952 Watching for file changes with StatReloader
+INFO 2025-09-09 15:04:16,222 autoreload 147870 124593479606912 Watching for file changes with StatReloader
+INFO 2025-09-09 15:30:23,117 autoreload 159592 128684603617920 Watching for file changes with StatReloader

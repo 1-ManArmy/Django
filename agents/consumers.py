@@ -9,7 +9,8 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from agents.models import Agent, AgentConversation, Message
+from agents.models import Agent, AgentConversation
+from ai_services.models import Message
 from ai_services.services import AIServiceFactory
 
 User = get_user_model()

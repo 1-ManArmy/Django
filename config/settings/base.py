@@ -41,6 +41,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     # API Framework
     'rest_framework',
+    'rest_framework.authtoken',  # Required for dj-rest-auth
     'rest_framework_simplejwt',
     'drf_spectacular',
     'corsheaders',
@@ -52,6 +53,8 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    'dj_rest_auth',  # REST API authentication
+    'dj_rest_auth.registration',  # REST API registration
     
     # Real-time & Channels
     'channels',
@@ -97,6 +100,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Required for django-allauth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
@@ -328,6 +332,15 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
     }
 }
+
+# OAuth Configuration
+GOOGLE_OAUTH2_CLIENT_ID = config('GOOGLE_OAUTH2_CLIENT_ID', default='')
+GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET', default='')
+GOOGLE_OAUTH2_CALLBACK_URL = config('GOOGLE_OAUTH2_CALLBACK_URL', default='http://localhost:8000/auth/google/callback/')
+
+GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID', default='')
+GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET', default='')
+GITHUB_CALLBACK_URL = config('GITHUB_CALLBACK_URL', default='http://localhost:8000/auth/github/callback/')
 
 # Security Settings
 SECURE_BROWSER_XSS_FILTER = True

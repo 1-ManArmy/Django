@@ -9,7 +9,8 @@ from django.http import Http404, JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 
-from .models import Agent, AgentConversation, Message
+from .models import Agent, AgentConversation
+from ai_services.models import Message
 
 
 def agent_list(request):

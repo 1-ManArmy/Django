@@ -4,6 +4,7 @@ URL patterns for all authentication-related views and endpoints
 """
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.conf import settings
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
