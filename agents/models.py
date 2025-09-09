@@ -34,33 +34,36 @@ class AgentCategory(models.Model):
 class Agent(models.Model):
     """The 24 specialized AI agents."""
     
-    # Agent identifiers from the README
+    # Agent identifiers - 27 specialized AI agents
     AGENT_CHOICES = [
-        # Conversation Agents
+        # Conversation Agents (7)
         ('neochat', 'NeoChat - Advanced Conversational AI'),
         ('personax', 'PersonaX - Personality-driven Chat'),
         ('girlfriend', 'Girlfriend - Emotional Companion'),
         ('emotisense', 'EmotiSense - Emotion Analysis'),
         ('callghost', 'CallGhost - Voice Interactions'),
         ('memora', 'Memora - Memory-enhanced AI'),
+        ('socialwise', 'SocialWise - Social Intelligence Expert'),
         
-        # Technical Agents
+        # Technical Agents (7)
         ('configai', 'ConfigAI - Technical Configuration'),
         ('infoseek', 'InfoSeek - Research & Analysis'),
         ('documind', 'DocuMind - Document Processing'),
         ('netscope', 'NetScope - Network Analysis'),
         ('authwise', 'AuthWise - Security Consulting'),
         ('spylens', 'SpyLens - Data Investigation'),
+        ('codemaster', 'CodeMaster - Programming Expert'),
         
-        # Creative Agents
+        # Creative Agents (7)
         ('cinegen', 'CineGen - Video Production'),
         ('contentcrafter', 'ContentCrafter - Content Creation'),
         ('dreamweaver', 'DreamWeaver - Creative Ideation'),
         ('ideaforge', 'IdeaForge - Innovation Catalyst'),
         ('aiblogster', 'AIBlogster - Blog Generation'),
         ('vocamind', 'VocaMind - Voice Synthesis'),
+        ('artisan', 'Artisan - Digital Art Creator'),
         
-        # Business Agents
+        # Business Agents (6)
         ('datasphere', 'DataSphere - Data Analytics'),
         ('datavision', 'DataVision - Business Intelligence'),
         ('taskmaster', 'TaskMaster - Project Management'),
@@ -80,8 +83,12 @@ class Agent(models.Model):
     system_prompt = models.TextField()
     
     # Configuration
-    default_ai_config = models.ForeignKey(AIServiceConfig, on_delete=models.SET_NULL, 
+    default_ai_config = models.ForeignKey(AIServiceConfig, on_delete=models.SET_NULL,
                                         null=True, blank=True)
+    engine_class = models.CharField(max_length=100, blank=True,
+                                  help_text="Python class path for agent engine")
+    config_file = models.CharField(max_length=100, blank=True,
+                                 help_text="YAML config file path")
     capabilities = models.JSONField(default=list)  # List of capabilities
     supported_features = models.JSONField(default=list)  # Supported features
     tools = models.JSONField(default=list)  # Available tools/functions

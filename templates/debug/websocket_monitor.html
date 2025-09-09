@@ -1,0 +1,404 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}WebSocket Monitor - OneLastAI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+    .status-connected { background-color: #10b981; }
+    .status-connecting { background-color: #f59e0b; }
+    .status-disconnected { background-color: #ef4444; }
+    .status-error { background-color: #dc2626; }
+    
+    .connection-card {
+        transition: all 0.2s ease;
+    }
+    .connection-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .log-entry {
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 0.875rem;
+        padding: 0.5rem;
+        border-left: 3px solid transparent;
+        margin-bottom: 0.25rem;
+    }
+    .log-info { border-left-color: #3b82f6; background-color: #eff6ff; }
+    .log-success { border-left-color: #10b981; background-color: #ecfdf5; }
+    .log-warning { border-left-color: #f59e0b; background-color: #fffbeb; }
+    .log-error { border-left-color: #ef4444; background-color: #fef2f2; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div x-data="websocketMonitor()" class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            WebSocket Monitor
+        </h1>
+        <p class="text-gray-600">
+            Real-time monitoring of WebSocket connections and agent interactions
+        </p>
+    </div>
+
+    <!-- Connection Status Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-plug text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Active Connections</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.activeConnections">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-comments text-green-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Messages Today</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.messagesToday">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-purple-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Online Users</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.onlineUsers">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-orange-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Errors</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.errors">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Test -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Connection Test</h3>
+        
+        <div class="flex items-center space-x-4 mb-4">
+            <button @click="testAgentConnection()" 
+                    :disabled="testing"
+                    class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                <i class="fas fa-robot mr-2"></i>
+                <span x-text="testing ? 'Testing...' : 'Test Agent Chat'"></span>
+            </button>
+            
+            <button @click="testDashboardConnection()" 
+                    :disabled="testing"
+                    class="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
+                <i class="fas fa-chart-bar mr-2"></i>
+                <span x-text="testing ? 'Testing...' : 'Test Dashboard'"></span>
+            </button>
+            
+            <button @click="testCommunityConnection()" 
+                    :disabled="testing"
+                    class="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50">
+                <i class="fas fa-users mr-2"></i>
+                <span x-text="testing ? 'Testing...' : 'Test Community'"></span>
+            </button>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="space-y-2">
+            <template x-for="connection in connections" :key="connection.id">
+                <div class="connection-card flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <span :class="`status-indicator status-${connection.status}`"></span>
+                        <span class="font-medium" x-text="connection.name"></span>
+                        <span class="text-sm text-gray-500 ml-2" x-text="connection.url"></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-500" x-text="connection.lastUpdate"></span>
+                        <button @click="disconnectConnection(connection.id)" 
+                                x-show="connection.status === 'connected'"
+                                class="text-red-600 hover:text-red-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Real-time Log -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Real-time Log</h3>
+            <div class="flex items-center space-x-2">
+                <button @click="clearLog()" 
+                        class="text-sm text-gray-500 hover:text-gray-700">
+                    Clear Log
+                </button>
+                <button @click="autoScroll = !autoScroll" 
+                        :class="autoScroll ? 'text-blue-600' : 'text-gray-500'"
+                        class="text-sm hover:text-blue-700">
+                    <i class="fas fa-arrows-alt-v mr-1"></i>
+                    Auto Scroll
+                </button>
+            </div>
+        </div>
+        
+        <div class="bg-gray-900 rounded-lg p-4 h-96 overflow-y-auto" 
+             x-ref="logContainer">
+            <template x-for="entry in logEntries" :key="entry.id">
+                <div :class="`log-entry log-${entry.level}`">
+                    <span class="text-gray-400" x-text="entry.timestamp"></span>
+                    <span class="text-gray-800 ml-2" x-text="entry.message"></span>
+                </div>
+            </template>
+            
+            <div x-show="logEntries.length === 0" class="text-gray-500 text-center py-8">
+                No log entries yet. Start testing connections to see activity.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function websocketMonitor() {
+    return {
+        stats: {
+            activeConnections: 0,
+            messagesToday: 0,
+            onlineUsers: 0,
+            errors: 0
+        },
+        connections: [],
+        logEntries: [],
+        testing: false,
+        autoScroll: true,
+
+        init() {
+            this.loadStats();
+            // Refresh stats every 30 seconds
+            setInterval(() => this.loadStats(), 30000);
+        },
+
+        async loadStats() {
+            try {
+                // In a real implementation, this would fetch from an API
+                // For now, we'll simulate some data
+                this.stats = {
+                    activeConnections: Math.floor(Math.random() * 50) + 10,
+                    messagesToday: Math.floor(Math.random() * 1000) + 500,
+                    onlineUsers: Math.floor(Math.random() * 20) + 5,
+                    errors: Math.floor(Math.random() * 5)
+                };
+            } catch (error) {
+                this.addLogEntry('error', 'Failed to load statistics');
+            }
+        },
+
+        async testAgentConnection() {
+            this.testing = true;
+            const connectionId = 'agent-test-' + Date.now();
+            
+            try {
+                this.addLogEntry('info', 'Starting agent WebSocket connection test...');
+                
+                // Add connection to list
+                this.connections.push({
+                    id: connectionId,
+                    name: 'Agent Chat Test',
+                    url: 'ws://localhost:8000/ws/agents/1/chat/',
+                    status: 'connecting',
+                    lastUpdate: new Date().toLocaleTimeString()
+                });
+
+                // Simulate WebSocket connection
+                const ws = new WebSocket('ws://localhost:8000/ws/agents/1/chat/');
+                
+                ws.onopen = () => {
+                    this.updateConnectionStatus(connectionId, 'connected');
+                    this.addLogEntry('success', 'Agent WebSocket connected successfully');
+                    
+                    // Send test message
+                    ws.send(JSON.stringify({
+                        type: 'user_message',
+                        message: 'Hello, this is a test message!'
+                    }));
+                };
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    this.addLogEntry('info', `Received: ${data.type} - ${data.message || 'No message'}`);
+                };
+
+                ws.onerror = (error) => {
+                    this.updateConnectionStatus(connectionId, 'error');
+                    this.addLogEntry('error', 'Agent WebSocket connection error');
+                    this.stats.errors++;
+                };
+
+                ws.onclose = () => {
+                    this.updateConnectionStatus(connectionId, 'disconnected');
+                    this.addLogEntry('warning', 'Agent WebSocket connection closed');
+                };
+
+                // Store WebSocket reference
+                const connection = this.connections.find(c => c.id === connectionId);
+                if (connection) {
+                    connection.ws = ws;
+                }
+
+            } catch (error) {
+                this.addLogEntry('error', `Agent connection test failed: ${error.message}`);
+                this.updateConnectionStatus(connectionId, 'error');
+            } finally {
+                this.testing = false;
+            }
+        },
+
+        async testDashboardConnection() {
+            this.testing = true;
+            const connectionId = 'dashboard-test-' + Date.now();
+            
+            try {
+                this.addLogEntry('info', 'Starting dashboard WebSocket connection test...');
+                
+                this.connections.push({
+                    id: connectionId,
+                    name: 'Dashboard Test',
+                    url: 'ws://localhost:8000/ws/dashboard/',
+                    status: 'connecting',
+                    lastUpdate: new Date().toLocaleTimeString()
+                });
+
+                // Simulate dashboard WebSocket
+                setTimeout(() => {
+                    this.updateConnectionStatus(connectionId, 'connected');
+                    this.addLogEntry('success', 'Dashboard WebSocket connected successfully');
+                }, 1000);
+
+            } catch (error) {
+                this.addLogEntry('error', `Dashboard connection test failed: ${error.message}`);
+                this.updateConnectionStatus(connectionId, 'error');
+            } finally {
+                this.testing = false;
+            }
+        },
+
+        async testCommunityConnection() {
+            this.testing = true;
+            const connectionId = 'community-test-' + Date.now();
+            
+            try {
+                this.addLogEntry('info', 'Starting community WebSocket connection test...');
+                
+                this.connections.push({
+                    id: connectionId,
+                    name: 'Community Test',
+                    url: 'ws://localhost:8000/ws/community/',
+                    status: 'connecting',
+                    lastUpdate: new Date().toLocaleTimeString()
+                });
+
+                // Simulate community WebSocket
+                setTimeout(() => {
+                    this.updateConnectionStatus(connectionId, 'connected');
+                    this.addLogEntry('success', 'Community WebSocket connected successfully');
+                }, 1500);
+
+            } catch (error) {
+                this.addLogEntry('error', `Community connection test failed: ${error.message}`);
+                this.updateConnectionStatus(connectionId, 'error');
+            } finally {
+                this.testing = false;
+            }
+        },
+
+        updateConnectionStatus(connectionId, status) {
+            const connection = this.connections.find(c => c.id === connectionId);
+            if (connection) {
+                connection.status = status;
+                connection.lastUpdate = new Date().toLocaleTimeString();
+            }
+        },
+
+        disconnectConnection(connectionId) {
+            const connection = this.connections.find(c => c.id === connectionId);
+            if (connection) {
+                if (connection.ws) {
+                    connection.ws.close();
+                }
+                connection.status = 'disconnected';
+                connection.lastUpdate = new Date().toLocaleTimeString();
+                this.addLogEntry('info', `Disconnected ${connection.name}`);
+            }
+        },
+
+        addLogEntry(level, message) {
+            const entry = {
+                id: Date.now() + Math.random(),
+                timestamp: new Date().toLocaleTimeString(),
+                level: level,
+                message: message
+            };
+            
+            this.logEntries.push(entry);
+            
+            // Limit log entries to 100
+            if (this.logEntries.length > 100) {
+                this.logEntries.shift();
+            }
+            
+            // Auto scroll if enabled
+            if (this.autoScroll) {
+                this.$nextTick(() => {
+                    const container = this.$refs.logContainer;
+                    if (container) {
+                        container.scrollTop = container.scrollHeight;
+                    }
+                });
+            }
+        },
+
+        clearLog() {
+            this.logEntries = [];
+            this.addLogEntry('info', 'Log cleared');
+        }
+    }
+}
+</script>
+{% endblock %}

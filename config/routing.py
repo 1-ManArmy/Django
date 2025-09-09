@@ -1,26 +1,36 @@
 """
-WebSocket URL routing for OneLastAI Platform.
+OneLastAI Platform - WebSocket Routing Configuration
+Defines URL routing for WebSocket consumers with real-time features
 """
-
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from django.core.asgi import get_asgi_application
 from django.urls import path
-from channels.routing import URLRouter
 
 # Import WebSocket consumers
-from agents.consumers import AgentChatConsumer
-from voice.consumers import VoiceAgentConsumer
-from dashboard.consumers import DashboardConsumer
-from community.consumers import CommunityConsumer
+from agents.consumers import (
+    AgentChatConsumer,
+    VoiceAgentConsumer,
+    DashboardConsumer,
+    CommunityConsumer
+)
 
 websocket_urlpatterns = [
-    # Agent Chat WebSockets
-    path('ws/agents/<str:agent_id>/chat/', AgentChatConsumer.as_asgi()),
-    path('ws/agents/<str:agent_id>/voice/', VoiceAgentConsumer.as_asgi()),
+    # Agent Chat WebSockets - Real-time messaging with AI agents
+    path('ws/agents/<int:agent_id>/chat/', AgentChatConsumer.as_asgi()),
+    path('ws/agents/<int:agent_id>/voice/', VoiceAgentConsumer.as_asgi()),
     
-    # Dashboard WebSockets
+    # Dashboard WebSockets - Real-time analytics and notifications
     path('ws/dashboard/', DashboardConsumer.as_asgi()),
-    path('ws/dashboard/analytics/', DashboardConsumer.as_asgi()),
     
-    # Community Features
-    path('ws/community/chat/', CommunityConsumer.as_asgi()),
-    path('ws/community/notifications/', CommunityConsumer.as_asgi()),
+    # Community Features - Global chat and notifications
+    path('ws/community/', CommunityConsumer.as_asgi()),
 ]
+
+# Complete ASGI application configuration
+application = ProtocolTypeRouter({
+    'http': get_asgi_application(),
+    'websocket': AuthMiddlewareStack(
+        URLRouter(websocket_urlpatterns)
+    ),
+})

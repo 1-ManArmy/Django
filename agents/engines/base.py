@@ -1,7 +1,265 @@
 """
-Base Agent Engine for OneLastAI Platform.
-Provides the foundation for all AI agents.
+OneLastAI Platform - Base Agent Engine
+Base class for all specialized AI agent engines with advanced tuning capabilities
 """
+import yaml
+import os
+from typing import Dict, List, Any, Optional
+from abc import ABC, abstractmethod
+from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class BaseAgentEngine(ABC):
+    """
+    Base class for all AI agent engines.
+    Each agent has its own engine for specialized behavior and processing.
+    """
+    
+    def __init__(self, agent_id: str, config_path: Optional[str] = None):
+        """
+        Initialize the agent engine with configuration.
+        
+        Args:
+            agent_id: Unique identifier for the agent
+            config_path: Path to the YAML configuration file
+        """
+        self.agent_id = agent_id
+        self.config = self.load_config(config_path)
+        self.personality = self.config.get('personality', {})
+        self.capabilities = self.config.get('capabilities', [])
+        self.system_prompt = self.build_system_prompt()
+        self.conversation_memory = {}
+        
+    def load_config(self, config_path: Optional[str] = None) -> Dict[str, Any]:
+        """Load agent configuration from YAML file."""
+        if not config_path:
+            config_path = os.path.join(
+                settings.BASE_DIR, 
+                'agents', 
+                'configs', 
+                f'{self.agent_id}.yml'
+            )
+        
+        try:
+            with open(config_path, 'r', encoding='utf-8') as file:
+                config = yaml.safe_load(file)
+                logger.info(f"Loaded config for agent {self.agent_id}")
+                return config
+        except FileNotFoundError:
+            logger.warning(f"Config file not found for agent {self.agent_id}: {config_path}")
+            return self.get_default_config()
+        except yaml.YAMLError as e:
+            logger.error(f"Error parsing YAML config for agent {self.agent_id}: {e}")
+            return self.get_default_config()
+    
+    def get_default_config(self) -> Dict[str, Any]:
+        """Get default configuration if YAML file is not available."""
+        return {
+            'name': f'Agent {self.agent_id}',
+            'version': '1.0',
+            'personality': {
+                'traits': ['helpful', 'professional'],
+                'communication_style': 'balanced',
+                'formality_level': 'professional'
+            },
+            'capabilities': ['chat', 'analysis'],
+            'parameters': {
+                'temperature': 0.7,
+                'max_tokens': 2000,
+                'top_p': 0.9
+            }
+        }
+    
+    def build_system_prompt(self) -> str:
+        """Build the system prompt based on configuration."""
+        base_prompt = self.config.get('system_prompt', {})
+        
+        # Combine role, personality, and capabilities into system prompt
+        role = base_prompt.get('role', f'You are {self.config.get("name", self.agent_id)}')
+        personality_desc = self.build_personality_description()
+        capabilities_desc = self.build_capabilities_description()
+        
+        prompt_parts = [
+            role,
+            personality_desc,
+            capabilities_desc,
+            base_prompt.get('instructions', ''),
+            base_prompt.get('constraints', '')
+        ]
+        
+        return '\n\n'.join(filter(None, prompt_parts))
+    
+    def build_personality_description(self) -> str:
+        """Build personality description from config."""
+        traits = self.personality.get('traits', [])
+        style = self.personality.get('communication_style', 'balanced')
+        formality = self.personality.get('formality_level', 'professional')
+        
+        if not traits:
+            return ""
+        
+        return (f"Your personality traits include: {', '.join(traits)}. "
+                f"You communicate in a {style} manner with {formality} formality.")
+    
+    def build_capabilities_description(self) -> str:
+        """Build capabilities description from config."""
+        capabilities = self.config.get('capabilities', [])
+        if not capabilities:
+            return ""
+        
+        return f"Your capabilities include: {', '.join(capabilities)}."
+    
+    @abstractmethod
+    def process_message(self, message: str, context: Dict[str, Any]) -> str:
+        """
+        Process incoming message and generate response.
+        
+        Args:
+            message: User input message
+            context: Conversation context and metadata
+            
+        Returns:
+            Generated response string
+        """
+        pass
+    
+    def preprocess_message(self, message: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Preprocess the incoming message before AI processing.
+        
+        Args:
+            message: Raw user message
+            context: Current conversation context
+            
+        Returns:
+            Processed context with enhanced information
+        """
+        # Add personality context
+        context['personality'] = self.personality
+        
+        # Add conversation history if available
+        conversation_id = context.get('conversation_id')
+        if conversation_id and conversation_id in self.conversation_memory:
+            context['recent_history'] = self.conversation_memory[conversation_id][-10:]
+        
+        # Add agent-specific context
+        context['agent_capabilities'] = self.capabilities
+        context['agent_config'] = self.config
+        
+        return context
+    
+    def postprocess_response(self, response: str, context: Dict[str, Any]) -> str:
+        """
+        Postprocess the AI response before returning to user.
+        
+        Args:
+            response: Raw AI response
+            context: Conversation context
+            
+        Returns:
+            Processed response string
+        """
+        # Apply personality filters
+        response = self.apply_personality_filters(response)
+        
+        # Apply formatting based on agent preferences
+        response = self.apply_formatting(response)
+        
+        # Store in conversation memory
+        self.update_conversation_memory(context, response)
+        
+        return response
+    
+    def apply_personality_filters(self, response: str) -> str:
+        """Apply personality-based filters to the response."""
+        # Implement personality-specific modifications
+        formality = self.personality.get('formality_level', 'professional')
+        
+        if formality == 'casual':
+            # Make response more casual
+            response = response.replace('I would recommend', "I'd suggest")
+            response = response.replace('Please note that', "Just so you know")
+        elif formality == 'formal':
+            # Make response more formal
+            response = response.replace("can't", "cannot")
+            response = response.replace("don't", "do not")
+        
+        return response
+    
+    def apply_formatting(self, response: str) -> str:
+        """Apply agent-specific formatting to response."""
+        formatting = self.config.get('formatting', {})
+        
+        # Apply bullet points if preferred
+        if formatting.get('use_bullet_points', False):
+            # Convert numbered lists to bullet points
+            import re
+            response = re.sub(r'^\d+\.\s+', '• ', response, flags=re.MULTILINE)
+        
+        # Apply emphasis if preferred
+        if formatting.get('use_emphasis', False):
+            # Add emphasis to key points
+            response = re.sub(r'\b(important|key|critical|essential)\b', 
+                            r'**\1**', response, flags=re.IGNORECASE)
+        
+        return response
+    
+    def update_conversation_memory(self, context: Dict[str, Any], response: str):
+        """Update conversation memory with recent exchange."""
+        conversation_id = context.get('conversation_id')
+        if not conversation_id:
+            return
+        
+        if conversation_id not in self.conversation_memory:
+            self.conversation_memory[conversation_id] = []
+        
+        # Add user message and agent response to memory
+        user_message = context.get('user_message', '')
+        self.conversation_memory[conversation_id].extend([
+            {'role': 'user', 'content': user_message},
+            {'role': 'assistant', 'content': response}
+        ])
+        
+        # Keep only last 50 exchanges
+        if len(self.conversation_memory[conversation_id]) > 100:
+            self.conversation_memory[conversation_id] = \
+                self.conversation_memory[conversation_id][-100:]
+    
+    def get_ai_parameters(self) -> Dict[str, Any]:
+        """Get AI model parameters from configuration."""
+        return self.config.get('parameters', {
+            'temperature': 0.7,
+            'max_tokens': 2000,
+            'top_p': 0.9,
+            'frequency_penalty': 0.0,
+            'presence_penalty': 0.0
+        })
+    
+    def validate_input(self, message: str) -> bool:
+        """Validate user input message."""
+        if not message or not message.strip():
+            return False
+        
+        # Check message length limits
+        max_length = self.config.get('limits', {}).get('max_input_length', 10000)
+        if len(message) > max_length:
+            return False
+        
+        return True
+    
+    def handle_error(self, error: Exception, context: Dict[str, Any]) -> str:
+        """Handle errors gracefully with agent-appropriate responses."""
+        error_responses = self.config.get('error_responses', {
+            'default': "I apologize, but I'm experiencing technical difficulties. Please try again.",
+            'timeout': "I'm taking longer than usual to respond. Please be patient or try again.",
+            'invalid_input': "I couldn't understand your request. Could you please rephrase it?"
+        })
+        
+        error_type = type(error).__name__.lower()
+        return error_responses.get(error_type, error_responses['default'])
 
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional, AsyncGenerator

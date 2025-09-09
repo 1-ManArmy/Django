@@ -110,9 +110,18 @@
         style="display: none;"
     >
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-            <a href="{% url 'core:agents' %}" class="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
-                AI Agents
-            </a>
+                                <a href="{% url 'agents:list' %}" 
+                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" 
+                       role="menuitem">
+                        <i class="fas fa-robot mr-3 text-gray-400"></i>
+                        AI Agents
+                    </a>
+                    <a href="{% url 'agents:history' %}" 
+                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" 
+                       role="menuitem">
+                        <i class="fas fa-history mr-3 text-gray-400"></i>
+                        Chat History
+                    </a>
             <a href="{% url 'payments:plans' %}" class="text-gray-500 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
                 Pricing
             </a>

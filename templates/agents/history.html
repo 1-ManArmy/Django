@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conversation History - OneLastAI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .conversation-card {
+        transition: all 0.2s ease-in-out;
+    }
+    .conversation-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .message-preview {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .agent-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+    }
+    .date-separator {
+        position: relative;
+        text-align: center;
+        margin: 2rem 0;
+    }
+    .date-separator::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e5e7eb;
+        z-index: 1;
+    }
+    .date-separator span {
+        background: white;
+        padding: 0 1rem;
+        color: #6b7280;
+        font-size: 0.875rem;
+        position: relative;
+        z-index: 2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div x-data="conversationHistory()" class="max-w-6xl mx-auto px-4 py-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                Conversation History
+            </h1>
+            <p class="text-gray-600">
+                Browse and manage your chat conversations with AI agents
+            </p>
+        </div>
+        
+        <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+            <!-- Search -->
+            <div class="relative">
+                <input 
+                    type="text" 
+                    x-model="searchQuery"
+                    @input="filterConversations"
+                    placeholder="Search conversations..."
+                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+            
+            <!-- Filter -->
+            <select 
+                x-model="selectedAgent"
+                @change="filterConversations"
+                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+                <option value="">All Agents</option>
+                <template x-for="agent in availableAgents" :key="agent.id">
+                    <option :value="agent.id" x-text="agent.name"></option>
+                </template>
+            </select>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-comments text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Total Conversations</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.totalConversations">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-calendar-day text-green-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">This Week</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.thisWeek">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-robot text-purple-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Agents Used</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.agentsUsed">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-message text-orange-600"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Total Messages</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.totalMessages">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div x-show="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- No Conversations -->
+    <div x-show="!loading && filteredConversations.length === 0" class="text-center py-12">
+        <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+            <i class="fas fa-comments text-6xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No conversations found</h3>
+        <p class="text-gray-500 mb-6">Start chatting with an AI agent to begin your conversation history.</p>
+        <a href="{% url 'agents:list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+            <i class="fas fa-plus mr-2"></i>
+            Start New Conversation
+        </a>
+    </div>
+
+    <!-- Conversations List -->
+    <div x-show="!loading && filteredConversations.length > 0">
+        <template x-for="(group, date) in groupedConversations" :key="date">
+            <div class="mb-8">
+                <!-- Date Separator -->
+                <div class="date-separator">
+                    <span x-text="formatDateGroup(date)"></span>
+                </div>
+
+                <!-- Conversations for this date -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="conversation in group" :key="conversation.id">
+                        <div class="conversation-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer"
+                             @click="openConversation(conversation.id)">
+                            <!-- Header -->
+                            <div class="flex items-center mb-4">
+                                <div class="agent-avatar" 
+                                     :style="`background-color: ${conversation.agent.color || '#3b82f6'}`">
+                                    <i :class="conversation.agent.icon || 'fas fa-robot'"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900" x-text="conversation.agent.name"></h3>
+                                    <p class="text-sm text-gray-500" x-text="conversation.agent.category"></p>
+                                </div>
+                                
+                                <!-- Options Menu -->
+                                <div class="relative" x-data="{ showMenu: false }">
+                                    <button @click.stop="showMenu = !showMenu" 
+                                            class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    
+                                    <div x-show="showMenu" 
+                                         @click.away="showMenu = false"
+                                         x-transition
+                                         class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                        <button @click.stop="renameConversation(conversation.id)"
+                                                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                            <i class="fas fa-edit mr-3"></i>
+                                            Rename
+                                        </button>
+                                        <button @click.stop="shareConversation(conversation.id)"
+                                                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                            <i class="fas fa-share mr-3"></i>
+                                            Share
+                                        </button>
+                                        <button @click.stop="exportConversation(conversation.id)"
+                                                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                            <i class="fas fa-download mr-3"></i>
+                                            Export
+                                        </button>
+                                        <hr class="my-1">
+                                        <button @click.stop="deleteConversation(conversation.id)"
+                                                class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                            <i class="fas fa-trash mr-3"></i>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Title -->
+                            <h4 class="font-medium text-gray-900 mb-2" x-text="conversation.title"></h4>
+
+                            <!-- Last Message Preview -->
+                            <div x-show="conversation.last_message">
+                                <p class="message-preview text-sm text-gray-600 mb-3" 
+                                   x-text="conversation.last_message?.content"></p>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="flex items-center justify-between text-sm text-gray-500">
+                                <div class="flex items-center">
+                                    <i class="fas fa-message mr-1"></i>
+                                    <span x-text="`${conversation.message_count} messages`"></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    <span x-text="formatRelativeTime(conversation.updated_at)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+
+<!-- Rename Conversation Modal -->
+<div x-show="showRenameModal" 
+     x-cloak
+     class="fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Rename Conversation</h3>
+                <input 
+                    x-model="renameTitle"
+                    type="text" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter new conversation title..."
+                >
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button @click="confirmRename()" 
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 sm:ml-3 sm:w-auto sm:text-sm">
+                    Save
+                </button>
+                <button @click="showRenameModal = false" 
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function conversationHistory() {
+    return {
+        conversations: [],
+        filteredConversations: [],
+        availableAgents: [],
+        searchQuery: '',
+        selectedAgent: '',
+        loading: true,
+        showRenameModal: false,
+        renameTitle: '',
+        renamingConversationId: null,
+        stats: {
+            totalConversations: 0,
+            thisWeek: 0,
+            agentsUsed: 0,
+            totalMessages: 0
+        },
+
+        async init() {
+            await this.loadConversations();
+            await this.loadStats();
+        },
+
+        async loadConversations() {
+            try {
+                this.loading = true;
+                const response = await fetch('/api/conversations/');
+                const data = await response.json();
+                
+                this.conversations = data.results || [];
+                this.filteredConversations = [...this.conversations];
+                
+                // Extract unique agents
+                const agentMap = new Map();
+                this.conversations.forEach(conv => {
+                    if (!agentMap.has(conv.agent.id)) {
+                        agentMap.set(conv.agent.id, conv.agent);
+                    }
+                });
+                this.availableAgents = Array.from(agentMap.values());
+                
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async loadStats() {
+            try {
+                const response = await fetch('/api/conversations/stats/');
+                const data = await response.json();
+                this.stats = data;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        },
+
+        filterConversations() {
+            let filtered = [...this.conversations];
+            
+            // Search filter
+            if (this.searchQuery.trim()) {
+                const query = this.searchQuery.toLowerCase();
+                filtered = filtered.filter(conv => 
+                    conv.title.toLowerCase().includes(query) ||
+                    conv.agent.name.toLowerCase().includes(query) ||
+                    conv.last_message?.content.toLowerCase().includes(query)
+                );
+            }
+            
+            // Agent filter
+            if (this.selectedAgent) {
+                filtered = filtered.filter(conv => 
+                    conv.agent.id === parseInt(this.selectedAgent)
+                );
+            }
+            
+            this.filteredConversations = filtered;
+        },
+
+        get groupedConversations() {
+            const groups = {};
+            
+            this.filteredConversations.forEach(conv => {
+                const date = new Date(conv.updated_at).toDateString();
+                if (!groups[date]) {
+                    groups[date] = [];
+                }
+                groups[date].push(conv);
+            });
+            
+            // Sort groups by date (newest first)
+            const sortedGroups = {};
+            Object.keys(groups)
+                .sort((a, b) => new Date(b) - new Date(a))
+                .forEach(key => {
+                    sortedGroups[key] = groups[key];
+                });
+            
+            return sortedGroups;
+        },
+
+        formatDateGroup(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Today';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return 'Yesterday';
+            } else {
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+        },
+
+        formatRelativeTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+            
+            if (diffInMinutes < 1) return 'Just now';
+            if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+            
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            if (diffInHours < 24) return `${diffInHours}h ago`;
+            
+            const diffInDays = Math.floor(diffInHours / 24);
+            if (diffInDays < 7) return `${diffInDays}d ago`;
+            
+            return date.toLocaleDateString();
+        },
+
+        openConversation(conversationId) {
+            window.location.href = `/agents/chat/?conversation=${conversationId}`;
+        },
+
+        renameConversation(conversationId) {
+            const conversation = this.conversations.find(c => c.id === conversationId);
+            this.renamingConversationId = conversationId;
+            this.renameTitle = conversation.title;
+            this.showRenameModal = true;
+        },
+
+        async confirmRename() {
+            if (!this.renameTitle.trim()) return;
+            
+            try {
+                const response = await fetch(`/api/conversations/${this.renamingConversationId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ title: this.renameTitle.trim() })
+                });
+                
+                if (response.ok) {
+                    // Update local data
+                    const conversation = this.conversations.find(c => c.id === this.renamingConversationId);
+                    conversation.title = this.renameTitle.trim();
+                    this.filterConversations();
+                    
+                    this.showRenameModal = false;
+                    this.renamingConversationId = null;
+                    this.renameTitle = '';
+                }
+            } catch (error) {
+                console.error('Error renaming conversation:', error);
+                alert('Failed to rename conversation');
+            }
+        },
+
+        shareConversation(conversationId) {
+            // TODO: Implement share functionality
+            alert('Share functionality coming soon!');
+        },
+
+        exportConversation(conversationId) {
+            // TODO: Implement export functionality
+            alert('Export functionality coming soon!');
+        },
+
+        async deleteConversation(conversationId) {
+            if (!confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/conversations/${conversationId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+                
+                if (response.ok) {
+                    // Remove from local data
+                    this.conversations = this.conversations.filter(c => c.id !== conversationId);
+                    this.filterConversations();
+                    await this.loadStats();
+                }
+            } catch (error) {
+                console.error('Error deleting conversation:', error);
+                alert('Failed to delete conversation');
+            }
+        }
+    }
+}
+</script>
+{% endblock %}
